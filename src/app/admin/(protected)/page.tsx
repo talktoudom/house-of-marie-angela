@@ -7,19 +7,27 @@ type SafeCountResult = {
   ok: boolean
 }
 
-async function safeCount(query: Promise<any>, timeoutMs = 5000): Promise<SafeCountResult> {
+type CountShape = { count?: number | null } | null | undefined
+
+async function safeCount<T extends CountShape>(
+  query: PromiseLike<T>,
+  timeoutMs = 5000
+): Promise<SafeCountResult> {
   try {
-    const timeout = new Promise(resolve =>
+    const timeout = new Promise<null>(resolve =>
       setTimeout(() => resolve(null), timeoutMs)
     )
 
-    const result: any = await Promise.race([query, timeout])
+    const result = await Promise.race([
+      Promise.resolve(query),
+      timeout,
+    ])
 
     if (!result) {
       return { value: null, ok: false }
     }
 
-    const count = result?.count
+    const count = (result as any)?.count
 
     return {
       value: typeof count === 'number' ? count : 0,
