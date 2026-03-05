@@ -7,14 +7,16 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       profiles: {
         Row: { id: string; email: string; role: string; created_at: string }
         Insert: { id: string; email: string; role?: string; created_at?: string }
         Update: { id?: string; email?: string; role?: string }
+        Relationships: []
       }
+
       products: {
         Row: {
           id: string
@@ -41,7 +43,9 @@ export interface Database {
           'id' | 'created_at' | 'updated_at'
         >
         Update: Partial<Database['public']['Tables']['products']['Insert']>
+        Relationships: []
       }
+
       product_images: {
         Row: {
           id: string
@@ -53,9 +57,10 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['product_images']['Row'], 'id'>
         Update: Partial<Database['public']['Tables']['product_images']['Insert']>
+        Relationships: []
       }
 
-      // ✅ FIXED: explicit Insert/Update (no self-referencing types), allows updated_at
+      // ✅ explicit Insert/Update + Relationships
       blog_posts: {
         Row: {
           id: string
@@ -102,6 +107,7 @@ export interface Database {
           published_at?: string | null
           updated_at?: string
         }
+        Relationships: []
       }
 
       orders: {
@@ -120,9 +126,14 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['orders']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Insert: Omit<
+          Database['public']['Tables']['orders']['Row'],
+          'id' | 'created_at' | 'updated_at'
+        >
         Update: Partial<Database['public']['Tables']['orders']['Insert']>
+        Relationships: []
       }
+
       order_items: {
         Row: {
           id: string
@@ -135,7 +146,9 @@ export interface Database {
         }
         Insert: Omit<Database['public']['Tables']['order_items']['Row'], 'id'>
         Update: Partial<Database['public']['Tables']['order_items']['Insert']>
+        Relationships: []
       }
+
       contact_messages: {
         Row: {
           id: string
@@ -151,7 +164,9 @@ export interface Database {
           'id' | 'created_at'
         >
         Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>
+        Relationships: []
       }
+
       newsletter_subscribers: {
         Row: { id: string; email: string; created_at: string; active: boolean }
         Insert: Omit<
@@ -161,7 +176,13 @@ export interface Database {
         Update: Partial<
           Database['public']['Tables']['newsletter_subscribers']['Insert']
         >
+        Relationships: []
       }
     }
+
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }
