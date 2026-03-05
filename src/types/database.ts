@@ -1,4 +1,11 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+// src/types/database.ts
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export interface Database {
   public: {
@@ -10,54 +17,150 @@ export interface Database {
       }
       products: {
         Row: {
-          id: string; title: string; slug: string; category: string; subcategory: string | null
-          price: number; sale_price: number | null; sizes: string[]; colors: string[]
-          stock_quantity: number; sku: string; short_description: string; full_description: string
-          admin_review_notes: string | null; is_featured: boolean; status: string
-          created_at: string; updated_at: string
+          id: string
+          title: string
+          slug: string
+          category: string
+          subcategory: string | null
+          price: number
+          sale_price: number | null
+          sizes: string[]
+          colors: string[]
+          stock_quantity: number
+          sku: string
+          short_description: string
+          full_description: string
+          admin_review_notes: string | null
+          is_featured: boolean
+          status: string
+          created_at: string
+          updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['products']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Insert: Omit<
+          Database['public']['Tables']['products']['Row'],
+          'id' | 'created_at' | 'updated_at'
+        >
         Update: Partial<Database['public']['Tables']['products']['Insert']>
       }
       product_images: {
-        Row: { id: string; product_id: string; public_id: string; secure_url: string; is_primary: boolean; sort_order: number }
+        Row: {
+          id: string
+          product_id: string
+          public_id: string
+          secure_url: string
+          is_primary: boolean
+          sort_order: number
+        }
         Insert: Omit<Database['public']['Tables']['product_images']['Row'], 'id'>
         Update: Partial<Database['public']['Tables']['product_images']['Insert']>
       }
+
+      // ✅ FIXED: explicit Insert/Update (no self-referencing types), allows updated_at
       blog_posts: {
         Row: {
-          id: string; title: string; slug: string; content: string; excerpt: string
-          cover_image_url: string | null; cover_image_public_id: string | null
-          author: string; tags: string[]; status: string; reading_time: number
-          created_at: string; updated_at: string; published_at: string | null
+          id: string
+          title: string
+          slug: string
+          content: string
+          excerpt: string
+          cover_image_url: string | null
+          cover_image_public_id: string | null
+          author: string
+          tags: string[]
+          status: string
+          reading_time: number
+          created_at: string
+          updated_at: string
+          published_at: string | null
         }
-        Insert: Omit<Database['public']['Tables']['blog_posts']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['blog_posts']['Insert']>
+        Insert: {
+          title: string
+          slug: string
+          content: string
+          excerpt: string
+          cover_image_url?: string | null
+          cover_image_public_id?: string | null
+          author: string
+          tags: string[]
+          status: string
+          reading_time: number
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          content?: string
+          excerpt?: string
+          cover_image_url?: string | null
+          cover_image_public_id?: string | null
+          author?: string
+          tags?: string[]
+          status?: string
+          reading_time?: number
+          published_at?: string | null
+          updated_at?: string
+        }
       }
+
       orders: {
         Row: {
-          id: string; user_email: string; user_name: string; user_phone: string
-          items: Json; subtotal: number; total: number; status: string
-          paystack_reference: string; paystack_transaction_id: string | null
-          shipping_address: Json; created_at: string; updated_at: string
+          id: string
+          user_email: string
+          user_name: string
+          user_phone: string
+          items: Json
+          subtotal: number
+          total: number
+          status: string
+          paystack_reference: string
+          paystack_transaction_id: string | null
+          shipping_address: Json
+          created_at: string
+          updated_at: string
         }
         Insert: Omit<Database['public']['Tables']['orders']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['orders']['Insert']>
       }
       order_items: {
-        Row: { id: string; order_id: string; product_id: string; quantity: number; price: number; size: string | null; color: string | null }
+        Row: {
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          price: number
+          size: string | null
+          color: string | null
+        }
         Insert: Omit<Database['public']['Tables']['order_items']['Row'], 'id'>
         Update: Partial<Database['public']['Tables']['order_items']['Insert']>
       }
       contact_messages: {
-        Row: { id: string; name: string; email: string; phone: string | null; message: string; created_at: string; read: boolean }
-        Insert: Omit<Database['public']['Tables']['contact_messages']['Row'], 'id' | 'created_at'>
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          message: string
+          created_at: string
+          read: boolean
+        }
+        Insert: Omit<
+          Database['public']['Tables']['contact_messages']['Row'],
+          'id' | 'created_at'
+        >
         Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>
       }
       newsletter_subscribers: {
         Row: { id: string; email: string; created_at: string; active: boolean }
-        Insert: Omit<Database['public']['Tables']['newsletter_subscribers']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['newsletter_subscribers']['Insert']>
+        Insert: Omit<
+          Database['public']['Tables']['newsletter_subscribers']['Row'],
+          'id' | 'created_at'
+        >
+        Update: Partial<
+          Database['public']['Tables']['newsletter_subscribers']['Insert']
+        >
       }
     }
   }
