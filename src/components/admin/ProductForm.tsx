@@ -246,8 +246,15 @@ export function ProductForm({ product }: Props) {
         await replaceProductImages(supabase, productId)
         toast.success('Product updated!')
       } else {
-        const { data: newProduct, error } = await supabase.from('products').insert(payload).select().single()
+        // ✅ FIX: select only `id` so TS knows what comes back
+        const { data: newProduct, error } = await supabase
+          .from('products')
+          .insert(payload)
+          .select('id')
+          .single()
+
         if (error) throw error
+        if (!newProduct?.id) throw new Error('Failed to create product (missing id)')
 
         await replaceProductImages(supabase, newProduct.id)
         toast.success('Product created!')
